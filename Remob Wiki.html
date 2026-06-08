@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remob Datapack Wiki - Complete Mob Reworks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f5f5;
+            --text: #1a1a1a;
+            --accent: #6da544;
+            --accent-dark: #5a8c3a;
+            --border: #d0d0d0;
+            --card-bg: #ffffff;
+            --infobox-bg: #f0f0f0;
+            --infobox-text: #222;
+            --shadow: rgba(0,0,0,0.1);
+            --variant-btn: #e0e0e0;
+        }
+
+        body.dark-mode {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --border: #333;
+            --card-bg: #1e1e1e;
+            --infobox-bg: #2a2a2a;
+            --infobox-text: #e0e0e0;
+            --shadow: rgba(0,0,0,0.3);
+            --variant-btn: #3a3a3a;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            transition: background-color 0.2s ease;
+            line-height: 1.5;
+        }
+
+        .wiki-header {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+            border-bottom: 3px solid var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        .wiki-header h1 { font-size: 2.2rem; }
+        .wiki-header p { opacity: 0.8; margin-top: 0.5rem; }
+
+        .beta-banner {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            text-align: center;
+            padding: 0.75rem;
+            border-radius: 12px;
+            max-width: 1000px;
+            margin: 0 auto 1.5rem;
+            font-weight: 500;
+        }
+
+        .top-bar {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 1rem;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #themeBtn {
+            background: var(--infobox-bg);
+            border: 1px solid var(--border);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            color: var(--text);
+        }
+
+        .category {
+            max-width: 1200px;
+            margin: 0 auto 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            border-left: 5px solid var(--accent);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mob-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .mob-card {
+            text-align: center;
+            cursor: pointer;
+            padding: 1rem 0.5rem;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .mob-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        /* HOME PAGE ICON: always face version */
+        .mob-card img {
+            width: 64px;
+            height: 64px;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            object-fit: contain;
+        }
+
+        .mob-card p { margin-top: 0.5rem; font-weight: 500; font-size: 0.85rem; }
+
+        #detailPage {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .detail-infobox {
+            float: right;
+            width: 300px;
+            border: 1px solid var(--border);
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            background: var(--infobox-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .infobox-header {
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* DETAIL PAGE ICON: variant-specific (different from home) */
+        .infobox-img { text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); }
+        .infobox-img img { image-rendering: pixelated; max-width: 140px; max-height: 140px; object-fit: contain; }
+        .infobox-stats { padding: 1rem; border-top: 1px solid var(--border); }
+        .infobox-stats p { margin: 0.5rem 0; }
+        .infobox-stats strong { color: var(--accent); }
+
+        .variant-selector {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .variant-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem; display: block; color: var(--accent); }
+        .variant-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .variant-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--variant-btn);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .variant-btn:hover, .variant-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .back-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .detail-content { overflow: hidden; }
+        .detail-content h1 { font-size: 2rem; border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 0.25rem; margin-bottom: 1rem; }
+        .variant-badge { display: inline-block; background: var(--accent); color: white; font-size: 0.8rem; padding: 0.2rem 0.8rem; border-radius: 20px; margin-left: 1rem; vertical-align: middle; }
+        
+        .detail-description { margin-top: 1rem; line-height: 1.7; }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        @media (max-width: 750px) {
+            .detail-infobox { float: none; width: 100%; margin: 0 0 1.5rem 0; }
+            .mob-grid { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); }
+        }
+
+        footer { text-align: center; padding: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.85rem; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+<div id="homePage">
+    <div class="wiki-header">
+        <h1>⚔️ Remob Datapack Wiki</h1>
+        <p>Complete Mob Reworks | Variants & Subspecies | Beta v1.0</p>
+    </div>
+    <div class="beta-banner">
+        🔥 BETA VERSION — Every mob has unique variants and abilities. Click any mob to view all its variants!
+    </div>
+    <div class="top-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Search for a mob..." onkeyup="filterMobs()">
+        <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+    </div>
+    <div id="mobContainer"></div>
+    <footer>📖 Remob Datapack — All mobs reworked with unique abilities. Select a variant using the buttons on each mob page.</footer>
+</div>
+
+<div id="detailPage">
+    <div class="detail-infobox">
+        <div class="infobox-header" id="detail-name"></div>
+        <div class="infobox-img"><img id="detail-img" src="" alt="Mob Variant"></div>
+        <div class="infobox-stats">
+            <div class="variant-selector">
+                <span class="variant-label">VARIANT</span>
+                <div class="variant-buttons" id="variantButtons"></div>
+            </div>
+            <p><strong> Health:</strong> <span id="detail-hp"></span></p>
+            <p id="attackRow"><strong> Attack:</strong> <span id="detail-dmg"></span></p>
+            <p id="scaleRow" style="display: none;"><strong> Scale:</strong> <span id="detail-scale"></span></p>
+            <p id="speedRow" style="display: none;"><strong> Speed:</strong> <span id="detail-speed"></span></p>
+            <button class="back-btn" id="backButton">← Back to List</button>
+        </div>
+    </div>
+    <div class="detail-content">
+        <h1 id="article-title"></h1>
+        <div class="detail-description" id="detail-description"></div>
+        <div class="ability-section" id="abilitySection">
+            <p id="detail-ability"></p>
+        </div>
+        <div class="tips-section" id="tipsSection">
+            <p id="detail-tips"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================================
+// REMOB DATAPACK WIKI
+// HOME PAGE ICONS: always use "mobname_face.png" (face icon)
+// DETAIL PAGE ICONS: use variant-specific full body / unique icons
+// Fixed: Allay now shows face on home, regular variant gif on detail
+// ============================================================================
+
+// ----- HOME PAGE ICON: always _face version -----
+function getHomeIcon(mobName) {
+    const base = "https://minecraft.wiki/images/";
+    let formatted = mobName.toLowerCase().replace(/ /g, '_');
+    
+    // Special face mappings for consistency
+    const faceMap = {
+        "allay": "Allay_face.png?f466a",
+        "armadillo": "Armadillo_face.png?18991",
+        "axolotl": "Axolotl_face.png?2060f",
+        "bat": "Bat_face.png?2b912",
+        "camel": "Camel_face.png?36554",
+        "cat": "Cat_face.png?613ec",
+        "chicken": "Chicken_face.png?a6dad",
+        "copper_golem": "Copper_Golem_face.png",
+        "cow": "Cow_face.png?3936a",
+        "happy_ghast": "Happy_Ghast_face.png?c38d1",
+        "horse": "Horse_face.png?75392",
+        "pig": "Pig_face.png?ffe16",
+        "sheep": "Sheep_face.png?e8d32",
+        "sniffer": "Sniffer_face.png?e6eb7",
+        "snow_golem": "Snow_Golem_face.png?a1eae",
+        "squid": "Squid_face.png?42150",
+        "strider": "Strider_face.png?7ea17",
+        "turtle": "Turtle_face.png?3fb35",
+        "villager": "Villager_face.png?c2d14",
+        "bee": "Bee_face.png?7220c",
+        "cave_spider": "Cave_Spider_face.png?10216",
+        "drowned": "Drowned_face.png?44966",
+        "enderman": "Enderman_face.png?8ebeb",
+        "iron_golem": "Iron_Golem_face.png?e15db",
+        "llama": "Llama_face.png?7c63d",
+        "panda": "Panda_face.png?d43c5",
+        "piglin": "Piglin_face.png?f3a63",
+        "spider": "Spider_face.png?128d3",
+        "wolf": "Wolf_face.png?1f64d",
+        "zombified_piglin": "Zombified_Piglin_face.png",
+        "blaze": "Blaze_face.png?f7846",
+        "bogged": "Bogged_face.png?9054f",
+        "breeze": "Breeze_face.png?b2225",
+        "creaking": "Creaking_face.png",
+        "creeper": "Creeper_face_1.png?b6233",
+        "elder_guardian": "Elder_Guardian_face.png?37a74",
+        "endermite": "Endermite_face.png?81aeb",
+        "evoker": "Evoker_face.png?127d0",
+        "ghast": "Ghast_face.png?ef53d",
+        "guardian": "Guardian_face_1.png?2168d",
+        "hoglin": "Hoglin_face_1.png?92eb0",
+        "husk": "Husk_face.png",
+        "illusioner": "Illusioner_face.png",
+        "magma_cube": "Magma_Cube_face.png",
+        "parched": "Parched_face.png",
+        "phantom": "Phantom_face.png",
+        "piglin_brute": "Piglin_Brute_face.png",
+        "pillager": "Pillager_face.png",
+        "ravager": "Ravager_face.png",
+        "shulker": "Shulker_face.png",
+        "silverfish": "Silverfish_face.png",
+        "skeleton": "Skeleton_face.png",
+        "slime": "Slime_face.png",
+        "stray": "Stray_face.png",
+        "vex": "Vex_face.png",
+        "vindicator": "Vindicator_face.png",
+        "warden": "Warden_face.png",
+        "witch": "Witch_face.png",
+        "wither_skeleton": "Wither_Skeleton_face.png",
+        "zombie": "Zombie_face.png",
+        "zombie_villager": "Zombie_Villager_face.png",
+        "hell_wither": "Wither_face.png",
+        "observer_unit": "Observer_JE4_BE3.png",
+        "haunted_armor": "Diamond_Helmet_JE2_BE2.png",
+        "killer_bunny": "EntitySprite_killer-bunny.png"
+    };
+    
+    if (faceMap[formatted]) return base + faceMap[formatted];
+    return base + `${formatted}_face.png`;
+}
+
+// ----- DETAIL PAGE ICON: variant-specific (full body or unique variant art) -----
+function getDetailIcon(mobName, variantName) {
+    const base = "https://minecraft.wiki/images/";
+    const key = `${mobName}_${variantName}`.toLowerCase().replace(/ /g, '_');
+    
+    const variantImageMap = {
+        // Passive Mobs
+        "allay_regular": "https://minecraft.wiki/images/thumb/Allay_JE2_BE2.gif/150px-Allay_JE2_BE2.gif?aca63",
+        "armadillo_regular": "https://minecraft.wiki/images/thumb/Armadillo_JE2_BE2.png/150px-Armadillo_JE2_BE2.png?9cdf1",
+        "axolotl_regular": "hhttps://minecraft.wiki/images/thumb/Axolotl_Idle_Floor_Underwater.gif/200px-Axolotl_Idle_Floor_Underwater.gif?20bba",
+        "bat_regular": "https://minecraft.wiki/images/Bat_JE4_BE3.gif?db68c",
+        "camel_regular": "https://minecraft.wiki/images/thumb/Camel_Idle.gif/200px-Camel_Idle.gif?72667",
+        "cat_regular": "https://minecraft.wiki/images/thumb/Tamed_Tuxedo_Cat_with_Red_Collar.png/150px-Tamed_Tuxedo_Cat_with_Red_Collar.png?3bbf8",
+        "chicken_regular": "https://minecraft.wiki/images/thumb/Chicken_JE2_BE2.png/150px-Chicken_JE2_BE2.png?30245",
+        "chicken_cold_chicken": "https://minecraft.wiki/images/thumb/Cold_Chicken_JE1_BE1.png/150px-Cold_Chicken_JE1_BE1.png?87af3",
+        "chicken_warm_chicken": "https://minecraft.wiki/images/thumb/Warm_Chicken_JE1_BE1.png/150px-Warm_Chicken_JE1_BE1.png?4dc4a",
+        "copper_golem_regular": "https://minecraft.wiki/images/thumb/Copper_Golem_JE1_BE1.png/100px-Copper_Golem_JE1_BE1.png?3c87d",
+        "copper_golem_small_copper_golem": "Copper_Golem.png",
+        "cow_regular": "https://minecraft.wiki/images/thumb/Cow_JE7_BE4.png/150px-Cow_JE7_BE4.png?3de94",
+        "cow_cold_cow": "https://minecraft.wiki/images/thumb/Cold_Cow_JE2_BE2.png/150px-Cold_Cow_JE2_BE2.png?c1d67",
+        "cow_warm_cow": "https://minecraft.wiki/images/thumb/Warm_Cow_JE1_BE1.png/150px-Warm_Cow_JE1_BE1.png?4bcf7",
+        "happy_ghast_regular": "https://minecraft.wiki/images/thumb/Happy_Ghast_JE1_BE1.gif/480px-Happy_Ghast_JE1_BE1.gif?7e801",
+        "horse_regular": "https://minecraft.wiki/images/thumb/Creamy_Horse.png/150px-Creamy_Horse.png?ea14a",
+        "horse_pony": "Horse.png",
+        "horse_skeleton_horse": "https://minecraft.wiki/images/thumb/Skeleton_Horse.png/150px-Skeleton_Horse.png?5e42a",
+        "horse_zombie_horse": "https://minecraft.wiki/images/thumb/Zombie_Horse_JE6.png/150px-Zombie_Horse_JE6.png?b6882",
+        "pig_regular": "https://minecraft.wiki/images/thumb/Temperate_Pig_JE4_BE2.png/150px-Temperate_Pig_JE4_BE2.png?c550c",
+        "pig_cold_pig": "https://minecraft.wiki/images/thumb/Cold_Pig_JE2_BE1.png/150px-Cold_Pig_JE2_BE1.png?e4bfd",
+        "pig_warm_pig": "https://minecraft.wiki/images/thumb/Warm_Pig_JE2_BE1.png/150px-Warm_Pig_JE2_BE1.png?1288f",
+        "sheep_regular": "https://minecraft.wiki/images/thumb/White_Sheep_JE5.png/150px-White_Sheep_JE5.png?a5000",
+        "sniffer_regular": "https://minecraft.wiki/images/thumb/Sniffer_sniffsniff.gif/200px-Sniffer_sniffsniff.gif?36ccd",
+        "snow_golem_regular": "https://minecraft.wiki/images/thumb/Snow_Golem_JE2_BE2.png/150px-Snow_Golem_JE2_BE2.png?23125",
+        "squid_regular": "https://minecraft.wiki/images/thumb/Squid_JE2_BE2.gif/150px-Squid_JE2_BE2.gif?8a4c4",
+        "squid_glow_squid": "https://minecraft.wiki/images/thumb/Glow_Squid_JE1.gif/150px-Glow_Squid_JE1.gif?dcad8",
+        "strider_nano": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_micro": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_mini": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_standard": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_large": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_giant": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "strider_terra": "https://minecraft.wiki/images/Strider_JE2_BE2.gif?f8244",
+        "turtle_regular": "https://minecraft.wiki/images/thumb/Turtle_JE3_BE1.png/200px-Turtle_JE3_BE1.png?373f9",
+        "villager_regular": "https://minecraft.wiki/images/thumb/Plains_Villager_Base_JE2.png/150px-Plains_Villager_Base_JE2.png?a2fcc",
+        // Neutral Mobs
+        "bee_regular": "https://minecraft.wiki/images/Bee_JE1.gif?69ac5",
+        "cave_spider_regular": "https://minecraft.wiki/images/thumb/Cave_Spider_JE3_BE3.png/150px-Cave_Spider_JE3_BE3.png?86c1d",
+        "cave_spider_cave_wolf_spider": "Cave_Spider.png",
+        "cave_spider_cave_goliath_spider": "https://minecraft.wiki/images/thumb/Cave_Spider_JE3_BE3.png/150px-Cave_Spider_JE3_BE3.png?86c1d",
+        "drowned_regular": "https://minecraft.wiki/images/thumb/Drowned_JE2.png/132px-Drowned_JE2.png?408ba",
+        "drowned_giant_drowned": "Drowned.png",
+        "drowned_drowned_leader": "Drowned.png",
+        "enderman_overworld": "https://minecraft.wiki/images/thumb/Enderman_JE3_BE1.png/272px-Enderman_JE3_BE1.png?c6308",
+        "enderman_nether": "Enderman.png",
+        "enderman_end": "Enderman.png",
+        "iron_golem_regular": "https://minecraft.wiki/images/thumb/Iron_Golem_JE2_BE2.png/150px-Iron_Golem_JE2_BE2.png?2cd73",
+        "iron_golem_mini_iron_golem": "https://minecraft.wiki/images/thumb/Iron_Golem_JE2_BE2.png/150px-Iron_Golem_JE2_BE2.png?2cd73",
+        "llama_regular": "https://minecraft.wiki/images/thumb/Creamy_Llama_JE2_BE2.png/150px-Creamy_Llama_JE2_BE2.png?45d8c",
+        "llama_trader_llama": "https://minecraft.wiki/images/thumb/Brown_Trader_Llama.png/150px-Brown_Trader_Llama.png?b7db4",
+        "panda_regular": "https://minecraft.wiki/images/thumb/Panda_JE1_BE1.png/180px-Panda_JE1_BE1.png?31d00",
+        "piglin_peasant": "https://minecraft.wiki/images/thumb/Piglin_JE1.png/150px-Piglin_JE1.png?a498e",
+        "piglin_crimson_tribe": "Piglin.png",
+        "piglin_warped_tribe": "Piglin.png",
+        "piglin_infected_crimson": "Zombified_Piglin.png",
+        "piglin_infected_warped": "Zombified_Piglin.png",
+        "piglin_rascal": "Piglin.png",
+        "piglin_trader": "Piglin.png",
+        "piglin_jester": "Piglin.png",
+        "piglin_royal": "Piglin.png",
+        "piglin_giant": "Piglin.png",
+        "spider_regular": "https://minecraft.wiki/images/thumb/Spider_JE5_BE4.png/212px-Spider_JE5_BE4.png?b090e",
+        "spider_wolf_spider": "Spider.png",
+        "spider_goliath_spider": "Spider.png",
+        "wolf_classic": "https://minecraft.wiki/images/thumb/Wolf_JE2_BE2.png/150px-Wolf_JE2_BE2.png?ee46e",
+        "wolf_sad": "Wolf.png",
+        "wolf_angry": "Wolf.png",
+        "wolf_grumpy": "Wolf.png",
+        "wolf_big": "Wolf.png",
+        "wolf_cute": "Wolf.png",
+        "wolf_puglin": "Wolf.png",
+        "zombified_piglin_regular": "https://minecraft.wiki/images/thumb/Zombified_Piglin_JE9.png/150px-Zombified_Piglin_JE9.png?b91da",
+        "zombified_piglin_giant": "Zombified_Piglin.png",
+        "zombified_piglin_leader": "Zombified_Piglin.png",
+        // Hostile Mobs
+        "blaze_regular": "https://minecraft.wiki/images/Blaze_JE2.gif?29f6f",
+        "bogged_regular": "https://minecraft.wiki/images/thumb/Bogged_JE2_BE2.png/100px-Bogged_JE2_BE2.png?55cb9",
+        "bogged_hunter": "Bogged.png",
+        "breeze_regular": "https://minecraft.wiki/images/thumb/Breeze_BE1_JE2.webp/150px-Breeze_BE1_JE2.webp?87e5c",
+        "creaking_regular": "https://minecraft.wiki/images/thumb/Creaking_JE1_BE1.png/100px-Creaking_JE1_BE1.png?1a8ab",
+        "creeper_regular": "https://minecraft.wiki/images/thumb/Creeper_JE3_BE1.png/128px-Creeper_JE3_BE1.png?dc7b2",
+        "creeper_creepling": "Creeper.png",
+        "creeper_nuclear": "Creeper.png",
+        "elder_guardian_regular": "https://minecraft.wiki/images/thumb/Elder_Guardian_JE2_BE2.gif/260px-Elder_Guardian_JE2_BE2.gif?99f67",
+        "endermite_regular": "https://minecraft.wiki/images/thumb/Endermite.gif/200px-Endermite.gif?920c2",
+        "evoker_regular": "https://minecraft.wiki/images/thumb/Evoker_JE3.png/100px-Evoker_JE3.png?54321",
+        "ghast_regular": "https://minecraft.wiki/images/thumb/Ghast_JE3_BE3.gif/240px-Ghast_JE3_BE3.gif?ae9fb",
+        "guardian_regular": "https://minecraft.wiki/images/thumb/Guardian_JE2_BE2.gif/150px-Guardian_JE2_BE2.gif?19e5a",
+        "hoglin_regular": "https://minecraft.wiki/images/thumb/Hoglin_JE3.png/250px-Hoglin_JE3.png?65eaa",
+        "husk_regular": "https://minecraft.wiki/images/thumb/Husk_JE2_BE2.png/150px-Husk_JE2_BE2.png?a6767",
+        "husk_giant_husk": "Husk.png",
+        "husk_leader": "Husk.png",
+        "illusioner_regular": "https://minecraft.wiki/images/thumb/Illusioner_JE3.png/150px-Illusioner_JE3.png?4414c",
+        "magma_cube_size_3": "https://minecraft.wiki/images/thumb/Magma_Cube_JE2_BE2.png/150px-Magma_Cube_JE2_BE2.png?dc507",
+        "magma_cube_size_1": "Magma_Cube.png",
+        "magma_cube_size_0": "Magma_Cube.png",
+        "parched_regular": "https://minecraft.wiki/images/thumb/Parched_JE2.png/100px-Parched_JE2.png?70598",
+        "parched_hunter": "https://minecraft.wiki/images/thumb/Parched_JE2.png/100px-Parched_JE2.png?70598",
+        "phantom_regular": "https://minecraft.wiki/images/thumb/Phantom_JE2.gif/150px-Phantom_JE2.gif?ed906",
+        "piglin_brute_regular": "https://minecraft.wiki/images/thumb/Piglin_Brute_JE1.png/150px-Piglin_Brute_JE1.png?5d4a0",
+        "piglin_brute_elite_raging": "Piglin_Brute.png",
+        "piglin_brute_elite_eating": "Piglin_Brute.png",
+        "piglin_brute_elite_splitting": "Piglin_Brute.png",
+        "pillager_regular": "https://minecraft.wiki/images/thumb/Pillager_JE3.png/150px-Pillager_JE3.png?22662",
+        "pillager_leader": "Pillager.png",
+        "ravager_regular": "https://minecraft.wiki/images/thumb/Ravager_JE1.png/150px-Ravager_JE1.png?55aae",
+        "shulker_regular": "https://minecraft.wiki/images/White_Shulker_JE1_BE1.png?2c169",
+        "silverfish_regular": "https://minecraft.wiki/images/thumb/Silverfish_JE1_BE1.gif/200px-Silverfish_JE1_BE1.gif?d40a7",
+        "skeleton_regular": "https://minecraft.wiki/images/thumb/Skeleton_JE6_BE4.png/100px-Skeleton_JE6_BE4.png?85786",
+        "skeleton_zombie_head": "Skeleton.png",
+        "skeleton_hunter": "Skeleton.png",
+        "slime_size_3": "https://minecraft.wiki/images/thumb/Slime_JE3_BE2.png/150px-Slime_JE3_BE2.png?5b6a7",
+        "slime_size_1": "Slime.png",
+        "slime_size_0": "Slime.png",
+        "stray_regular": "https://minecraft.wiki/images/thumb/Stray_JE2_BE4.png/100px-Stray_JE2_BE4.png?ef82d",
+        "stray_hunter": "Stray.png",
+        "vex_regular": "https://minecraft.wiki/images/thumb/Vex_JE4.gif/150px-Vex_JE4.gif?da166",
+        "vindicator_regular": "https://minecraft.wiki/images/thumb/Vindicator_JE3_BE3.png/150px-Vindicator_JE3_BE3.png?3185f",
+        "vindicator_leader": "Vindicator.png",
+        "warden_regular": "https://minecraft.wiki/images/thumb/Warden.gif/150px-Warden.gif?d0f99",
+        "witch_regular": "https://minecraft.wiki/images/thumb/Witch_JE3.png/100px-Witch_JE3.png?aeb30",
+        "wither_skeleton_regular": "https://minecraft.wiki/images/thumb/Wither_Skeleton_JE4_BE3.png/150px-Wither_Skeleton_JE4_BE3.png?9c107",
+        "zombie_regular": "https://minecraft.wiki/images/thumb/Zombie_JE3_BE2.png/150px-Zombie_JE3_BE2.png?c5423",
+        "zombie_giant_zombie": "Zombie.png",
+        "zombie_leader": "Zombie.png",
+        "zombie_villager_regular": "https://minecraft.wiki/images/thumb/Plains_Zombie_Villager_Base_JE1_BE1.png/190px-Plains_Zombie_Villager_Base_JE1_BE1.png?7882a",
+        // Boss
+        "hell_wither_phase_1-2": "https://minecraft.wiki/images/thumb/Wither_JE2_BE2.png/150px-Wither_JE2_BE2.png?60b11",
+        // New Mobs
+        "killer_bunny_regular": "https://minecraft.wiki/images/thumb/The_Killer_Bunny_JE6.png/230px-The_Killer_Bunny_JE6.png?0d361",
+        "observer_unit_regular": "https://minecraft.wiki/images/thumb/Observer_JE4_BE3.png/150px-Observer_JE4_BE3.png",
+        "haunted_armor_regular": "https://minecraft.wiki/images/thumb/Diamond_Helmet_JE2_BE2.png/160px-Diamond_Helmet_JE2_BE2.png"
+    };
+    
+    if (variantImageMap[key]) return variantImageMap[key];
+    // Fallback to a generic full body if needed
+    return base + "HerobrineFace.png";
+}
+
+// FULL MOB DATABASE (complete with all variants)
+const mobDatabase = {
+    "Passive Mobs": {
+        "Allay": { variants: { "Regular": { hp: "10", attack: "N/A", scale: "1.1", speed: "0.1", ability: "When hurt: Stuns all hostile mobs within 5 blocks (Slowness X + Glowing I for 3 seconds)", tips: "Use as support — keep it near combat", desc: "Flying helper that stuns enemies when damaged." } } },
+        "Armadillo": { variants: { "Regular": { hp: "20", attack: "N/A", scale: "1.4", speed: "0.1", ability: "When in shell: Resistance III + high knockback resistance", tips: "Let it curl up to absorb hits", desc: "Defensive mob that becomes a living shield." } } },
+        "Axolotl": { variants: { "Regular": { hp: "20", attack: "3", scale: "0.85", speed: "0.1", ability: "Now attacks every hostile mob", tips: "Perfect aquatic ally", desc: "Aggressive towards all underwater threats." } } },
+        "Bat": { variants: { "Regular": { hp: "5", attack: "N/A", scale: "1.15", speed: "0.1", ability: "Steals items in 3 blocks. Rides arrows becoming immune", tips: "Keep valuables in chests", desc: "Annoying thief." } } },
+        "Camel": { variants: { "Regular": { hp: "20", attack: "N/A", scale: "1.1", speed: "0.025", ability: "Safe fall 7, 5 armor, 0.5 knockback resist", tips: "Great for high places", desc: "Tanky mount." } } },
+        "Cat": { variants: { "Regular": { hp: "12", attack: "N/A", scale: "1.0", speed: "0.325", ability: "75% hydrophobia, 65% picklephobia", tips: "Keep away from water", desc: "Phobias cause jumping." } } },
+        "Chicken": { variants: { 
+            "Regular": { hp: "4", attack: "N/A", scale: "1.0", speed: "0.25", ability: "1 armor", tips: "Simple food", desc: "Common chicken." },
+            "Cold Chicken": { hp: "4", attack: "N/A", scale: "1.1", speed: "0.225", ability: "2 armor, slower, drops less meat more feathers", tips: "Found in cold biomes", desc: "Thicker body for insulation." },
+            "Warm Chicken": { hp: "4", attack: "N/A", scale: "0.9", speed: "0.275", ability: "Faster, small chance cooked meat", tips: "Great for instant food", desc: "Leaner body retains heat." }
+        } },
+        "Copper Golem": { variants: { 
+            "Regular": { hp: "20", attack: "N/A", scale: "1.0", speed: "0.15", ability: "Lightning = permanent Speed II. Regen I when hurt", tips: "Use lightning to charge", desc: "Mechanical ally." },
+            "Small Copper Golem": { hp: "10", attack: "N/A", scale: "0.4", speed: "0.1", ability: "Same abilities. Found in trial chambers chests", tips: "Rare find", desc: "Tiny version." }
+        } },
+        "Cow": { variants: { 
+            "Regular": { hp: "10", attack: "N/A", scale: "1.0", speed: "0.25", ability: "1 armor", tips: "Reliable source", desc: "Common cow." },
+            "Cold Cow": { hp: "10", attack: "N/A", scale: "1.1", speed: "0.225", ability: "2 armor, drops string + extra leather", tips: "Best for leather", desc: "Thick fur." },
+            "Warm Cow": { hp: "10", attack: "N/A", scale: "0.9", speed: "0.275", ability: "Faster, more meat, cooked meat chance", tips: "Ideal for food", desc: "Leaner and faster." }
+        } },
+        "Happy Ghast": { variants: { "Regular": { hp: "20", attack: "N/A", scale: "1.25", speed: "0.1", ability: "Evaporates fire on itself", tips: "Fireproof mount", desc: "Flame nullifier." } } },
+        "Horse": { variants: { 
+            "Regular": { hp: "Variable (15-30)", attack: "N/A", scale: "1.0", speed: "Variable", ability: "When hurt: Speed I for 30s", tips: "Hurt before race", desc: "Standard horse." },
+            "Pony": { hp: "6", attack: "N/A", scale: "0.55", speed: "0.2", ability: "Safe fall 10, low gravity, huge jumps", tips: "Perfect for mountains", desc: "Tiny jumper." },
+            "Skeleton Horse": { hp: "10", attack: "N/A", scale: "0.75", speed: "0.4", ability: "Speed 0.4, water efficiency", tips: "Fastest in water", desc: "Undead aquatic." },
+            "Zombie Horse": { hp: "50", attack: "N/A", scale: "1.5", speed: "0.15", ability: "Breaks small blocks, step height 1.5", tips: "Clears vegetation", desc: "Massive undead." }
+        } },
+        "Pig": { variants: { 
+            "Regular": { hp: "10", attack: "N/A", scale: "1.0", speed: "0.2", ability: "1 armor", tips: "Classic mount", desc: "Common pig." },
+            "Cold Pig": { hp: "10", attack: "N/A", scale: "1.05", speed: "0.19", ability: "2 armor, drops string + leather", tips: "Extra resources", desc: "Thick fur." },
+            "Warm Pig": { hp: "10", attack: "N/A", scale: "0.95", speed: "0.21", ability: "Faster, more meat, cooked meat chance", tips: "Best for pork", desc: "Leaner." }
+        } },
+        "Sheep": { variants: { "Regular": { hp: "8", attack: "N/A", scale: "1.0", speed: "0.1", ability: "1/512 chance to spawn as 'jeb_'", tips: "Name 'jeb_' for rainbow", desc: "Rare easter egg." } } },
+        "Sniffer": { variants: { "Regular": { hp: "100", attack: "N/A", scale: "2.0", speed: "0.15", ability: "Infinite Regen I, 10 armor", tips: "Nearly unkillable", desc: "Ancient regen tank." } } },
+        "Snow Golem": { variants: { "Regular": { hp: "40", attack: "N/A", scale: "1.25", speed: "0.175", ability: "Death explosion (Slowness X). Frost Walker", tips: "Shear for emergency slow", desc: "Walking ice bomb." } } },
+        "Squid": { variants: { 
+            "Regular": { hp: "4", attack: "N/A", scale: "0.4", speed: "0.1", ability: "Ink: Blindness II + Slowness II", tips: "Avoid hitting", desc: "Ink bomb." },
+            "Glow Squid": { hp: "4", attack: "N/A", scale: "0.4", speed: "0.1", ability: "Glowing ink: Glowing I + Slowness II", tips: "Glows when threatened", desc: "Luminous variant." }
+        } },
+        "Strider": { variants: { 
+            "Nano": { hp: "4", attack: "N/A", scale: "0.25", speed: "0.55", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Tiny lava strider." },
+            "Micro": { hp: "8", attack: "N/A", scale: "0.5", speed: "0.35", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Small lava strider." },
+            "Mini": { hp: "14", attack: "N/A", scale: "0.75", speed: "0.275", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Mini lava strider." },
+            "Standard": { hp: "18", attack: "N/A", scale: "1.0", speed: "0.2", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Standard lava strider." },
+            "Large": { hp: "24", attack: "N/A", scale: "1.35", speed: "0.15", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Large lava strider." },
+            "Giant": { hp: "48", attack: "N/A", scale: "1.75", speed: "0.125", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Giant lava strider." },
+            "Terra": { hp: "64", attack: "N/A", scale: "2.25", speed: "0.1", ability: "When damaged: Speed I for 25s", tips: "Damage for speed boost", desc: "Colossal lava strider." }
+        } },
+        "Turtle": { variants: { "Regular": { hp: "20", attack: "N/A", scale: "1.15", speed: "0.15", ability: "15 armor, deflects projectiles", tips: "Mobile shield", desc: "Projectile deflector." } } },
+        "Villager": { variants: { "Regular": { hp: "20", attack: "N/A", scale: "1.0", speed: "0.1", ability: "Armorer sells copper gear. Wandering trader sells plushies", tips: "Check wandering traders", desc: "Trading reworks." } } }
+    },
+    "Neutral Mobs": {
+        "Bee": { variants: { "Regular": { hp: "8", attack: "2", scale: "0.9", speed: "0.1", ability: "Smaller hitbox", tips: "Use smoke", desc: "Slightly smaller." } } },
+        "Cave Spider": { variants: { 
+            "Regular": { hp: "8", attack: "0.5", scale: "1.0", speed: "0.325", ability: "Spawns 1-2 extras", tips: "Area damage", desc: "Poisonous." }, 
+            "Cave Wolf Spider": { hp: "32", attack: "2.5", scale: "1.45", speed: "0.225", ability: "Spawns spiderlings", tips: "Sweeping edge", desc: "Alpha spider." }, 
+            "Cave Goliath Spider": { hp: "64", attack: "5", scale: "2.65", speed: "0.2", ability: "Immune potions, nearby mobs can ride it", tips: "Brute force", desc: "Magic-immune titan." } 
+        } },
+        "Drowned": { variants: { 
+            "Regular": { hp: "22", attack: "2", scale: "1.0", speed: "0.2", ability: "Weakness II, bite debuffs", tips: "Maintain distance", desc: "Aquatic zombie." }, 
+            "Giant Drowned": { hp: "72", attack: "2", scale: "1.5", speed: "0.225", ability: "Step height 1.5", tips: "Watch fences", desc: "Massive." }, 
+            "Drowned Leader": { hp: "50", attack: "3", scale: "1.0", speed: "0.23", ability: "Crown, summons on hurt", tips: "Kill first", desc: "Crowned commander." } 
+        } },
+        "Enderman": { variants: { 
+            "Overworld": { hp: "20", attack: "4", scale: "0.75", speed: "0.1", ability: "Picks up items", tips: "Water defense", desc: "Weaker." }, 
+            "Nether": { hp: "25", attack: "6", scale: "1.0", speed: "0.1", ability: "Blindness on attack", tips: "Bring milk", desc: "Disorienting." }, 
+            "End": { hp: "35", attack: "8", scale: "1.15", speed: "0.1", ability: "Speed II below 15 HP", tips: "Finish quickly", desc: "Most dangerous." } 
+        } },
+        "Iron Golem": { variants: { 
+            "Regular": { hp: "200", attack: "3", scale: "1.25", speed: "0.2", ability: "Resistance X at full health, splits on death", tips: "Use as tank", desc: "Nearly invincible." }, 
+            "Mini Iron Golem": { hp: "35", attack: "10", scale: "0.85", speed: "0.4", ability: "Fast and aggressive", tips: "Spawns from dead golem", desc: "Split fragment." } 
+        } },
+        "Llama": { variants: { 
+            "Regular": { hp: "30", attack: "Spit", scale: "1.0", speed: "0.2", ability: "Spit = Poison III", tips: "Equip carpet", desc: "Deadly spit." }, 
+            "Trader Llama": { hp: "30", attack: "Spit", scale: "1.0", speed: "0.2", ability: "Always has chest", tips: "Free storage", desc: "Pack animal." } 
+        } },
+        "Panda": { variants: { "Regular": { hp: "30", attack: "4", scale: "1.0", speed: "0.1", ability: "Immune freezing", tips: "Snowy biomes", desc: "Cold-immune." } } },
+        "Piglin": { variants: { 
+            "Peasant": { hp: "18", attack: "1", scale: "0.85", speed: "0.3", ability: "Strength I in groups", tips: "Avoid groups", desc: "Lowest caste." }, 
+            "Crimson Tribe": { hp: "20", attack: "4", scale: "0.89", speed: "0.275", ability: "Aggressive", tips: "Standard fighter", desc: "Red armor." }, 
+            "Warped Tribe": { hp: "16", attack: "2", scale: "0.82", speed: "0.35", ability: "25% crossbow", tips: "Close gap", desc: "Ranged." }, 
+            "Infected Crimson": { hp: "64", attack: "4", scale: "1.15", speed: "0.2", ability: "Infinite regen, summons small on hit", tips: "DPS race", desc: "Fungus brute." }, 
+            "Infected Warped": { hp: "64", attack: "3", scale: "1.05", speed: "0.215", ability: "Infinite regen, summons small on hit", tips: "High damage", desc: "Warped zombie." }, 
+            "Rascal": { hp: "20", attack: "2", scale: "0.82", speed: "0.4", ability: "Mimics held item", tips: "Hold weak weapon", desc: "Trickster." }, 
+            "Trader": { hp: "24", attack: "0", scale: "0.95", speed: "0.15", ability: "Never attacks", tips: "Safe to trade", desc: "Peaceful." }, 
+            "Jester": { hp: "24", attack: "0.5", scale: "0.9", speed: "0.2", ability: "Spin attack below 15 HP", tips: "Fight below Y-level", desc: "Spin attacker." }, 
+            "Royal": { hp: "16 + 12 Absorption", attack: "4", scale: "0.85", speed: "0.225", ability: "Shield breaks, then enrages", tips: "Break shield first", desc: "Golden elite." }, 
+            "Giant": { hp: "150", attack: "10", scale: "2.0", speed: "0.25", ability: "Infinite regen", tips: "Out-damage regen", desc: "Colossal." } 
+        } },
+        "Spider": { variants: { 
+            "Regular": { hp: "8", attack: "1.5", scale: "0.875", speed: "0.325", ability: "Spawns extras", tips: "Kill quickly", desc: "Common." }, 
+            "Wolf Spider": { hp: "32", attack: "5", scale: "1.2", speed: "0.225", ability: "Spawns spiderlings", tips: "Sweeping edge", desc: "Mother." }, 
+            "Goliath Spider": { hp: "64", attack: "10", scale: "1.6", speed: "0.2", ability: "Immune potions, mobs can ride", tips: "Raw damage", desc: "Titanic." } 
+        } },
+        "Wolf": { variants: { 
+            "Classic": { hp: "8", attack: "4", scale: "1.0", speed: "0.3", ability: "Jump Boost I when hurt", tips: "Standard", desc: "Classic." }, 
+            "Sad": { hp: "8", attack: "3", scale: "1.0", speed: "0.2", ability: "Slowness + Resistance", tips: "Tanky", desc: "Droopy." }, 
+            "Angry": { hp: "8", attack: "6", scale: "1.0", speed: "0.4", ability: "Strength I for 25s", tips: "Glass cannon", desc: "Aggressive." }, 
+            "Grumpy": { hp: "8", attack: "4", scale: "1.0", speed: "0.15", ability: "Strength I for 20s", tips: "Slow but hard", desc: "Slow." }, 
+            "Big": { hp: "8", attack: "2", scale: "1.15", speed: "0.25", ability: "Health Boost I", tips: "Lots of HP", desc: "Tank." }, 
+            "Cute": { hp: "8", attack: "2", scale: "0.85", speed: "0.4", ability: "Speed I when hurt", tips: "Fast but weak", desc: "Quick." }, 
+            "Puglin": { hp: "8", attack: "1", scale: "0.65", speed: "0.5", ability: "Speed II when hurt", tips: "Area denial", desc: "Fastest." } 
+        } },
+        "Zombified Piglin": { variants: { 
+            "Regular": { hp: "35", attack: "5", scale: "1.0", speed: "0.135", ability: "Stacks riding, gives Speed III", tips: "Avoid groups", desc: "Undead." }, 
+            "Giant": { hp: "120", attack: "12", scale: "2.0", speed: "0.15", ability: "Splits into 4", tips: "Safe area", desc: "Massive." }, 
+            "Leader": { hp: "80", attack: "5", scale: "1.0", speed: "0.23", ability: "Crown, summons", tips: "Kill first", desc: "Commander." } 
+        } }
+    },
+    "Hostile Mobs": {
+        "Blaze": { variants: { "Regular": { hp: "20", attack: "5 (laser)", scale: "0.9", speed: "0.1", ability: "On fire: Strength II, laser attack", tips: "Use blocks to reset laser", desc: "Ranged fire attacker." } } },
+        "Bogged": { variants: { 
+            "Regular": { hp: "14", attack: "5", scale: "1.0", speed: "0.3", ability: "Poison I, immune fall/sun", tips: "Engage from range", desc: "Swamp skeleton." }, 
+            "Hunter": { hp: "14", attack: "5", scale: "1.0", speed: "0.3", ability: "Switches weapons", tips: "Commit to range", desc: "Adaptive." } 
+        } },
+        "Breeze": { variants: { "Regular": { hp: "15", attack: "Wind charge", scale: "1.0", speed: "0.1", ability: "Invulnerable with wind charge, deflect to break", tips: "Reflect projectile", desc: "Wind defender." } } },
+        "Creaking": { variants: { "Regular": { hp: "Invulnerable", attack: "8", scale: "1.0", speed: "0.44", ability: "Blindness+Slowness, drains XP", tips: "Find heart block", desc: "Heart-bound." } } },
+        "Creeper": { variants: { 
+            "Regular": { hp: "20", attack: "Explosion", scale: "1.0", speed: "0.225", ability: "Random effect cloud", tips: "Check particles", desc: "Standard." }, 
+            "Creepling": { hp: "5", attack: "Explosion", scale: "0.65", speed: "0.325", ability: "Spawns in groups", tips: "Sweeping edge", desc: "Tiny swarmers." }, 
+            "Nuclear": { hp: "50", attack: "Explosion", scale: "1.5", speed: "0.15", ability: "Emits wither/poison, auto-ignites", tips: "RUN", desc: "Apocalyptic." } 
+        } },
+        "Elder Guardian": { variants: { "Regular": { hp: "100", attack: "Laser + 3 true", scale: "1.15", speed: "0.1", ability: "True damage, regenerates, spawns soul", tips: "Heavy burst damage", desc: "Mini-boss." } } },
+        "Endermite": { variants: { "Regular": { hp: "20", attack: "4", scale: "1.5", speed: "0.2", ability: "Rides entities, spawns clones", tips: "Heavy hits", desc: "Parasitic." } } },
+        "Evoker": { variants: { "Regular": { hp: "64", attack: "Spells", scale: "1.0", speed: "0.4", ability: "Immune projectiles, rides ravager, totem", tips: "Kill ravager first, then run", desc: "Spellcaster." } } },
+        "Ghast": { variants: { "Regular": { hp: "12", attack: "Fireball", scale: "1.0", speed: "0.1", ability: "Spawns 3 souls", tips: "Souls passive in Overworld", desc: "Soul-summoner." } } },
+        "Guardian": { variants: { "Regular": { hp: "20", attack: "6", scale: "1.15", speed: "0.1", ability: "15% regen, death explosion", tips: "Finish from range", desc: "Explosive death." } } },
+        "Hoglin": { variants: { "Regular": { hp: "50", attack: "4", scale: "1.25", speed: "0.25", ability: "Speed I when hit", tips: "Attack from range", desc: "Speedy." } } },
+        "Husk": { variants: { 
+            "Regular": { hp: "28", attack: "2", scale: "1.0", speed: "0.2", ability: "Bite debuffs", tips: "Maintain distance", desc: "Desert zombie." }, 
+            "Giant Husk": { hp: "78", attack: "2", scale: "1.5", speed: "0.225", ability: "Step height 1.5", tips: "Watch fences", desc: "Massive." }, 
+            "Leader": { hp: "60", attack: "3", scale: "1.0", speed: "0.22", ability: "Crown, summons", tips: "Kill first", desc: "Commander." } 
+        } },
+        "Magma Cube": { variants: { 
+            "Size 3": { hp: "16", attack: "4 AoE", scale: "2.0", speed: "1.05", ability: "AoE damage", tips: "Area damage", desc: "Large." }, 
+            "Size 1": { hp: "4", attack: "6 death", scale: "0.5", speed: "1.05", ability: "Death explosion", tips: "Kill from distance", desc: "Bomber." }, 
+            "Size 0": { hp: "1", attack: "2", scale: "0.25", speed: "1.05", ability: "Stackable", tips: "Swarm clearing", desc: "Tiny." } 
+        } },
+        "Parched": { variants: { 
+            "Regular": { hp: "20", attack: "4", scale: "1.0", speed: "0.225", ability: "Weakness I", tips: "Desert enemy", desc: "Desert bogged." }, 
+            "Hunter": { hp: "20", attack: "4", scale: "1.0", speed: "0.225", ability: "Switches weapons", tips: "Commit to range", desc: "Adaptive." } 
+        } },
+        "Phantom": { variants: { "Regular": { hp: "25", attack: "1", scale: "Variable", speed: "0.1", ability: "Picks up non-crouching players", tips: "Always crouch", desc: "Sky grabber." } } },
+        "Piglin Brute": { variants: { 
+            "Regular": { hp: "40", attack: "13", scale: "1.0", speed: "0.25", ability: "Below 20 HP: smoke bomb / enrage / summons", tips: "Be prepared", desc: "Guardian." }, 
+            "Elite Raging": { hp: "100", attack: "13", scale: "1.0", speed: "0.275", ability: "Gains stats every hit", tips: "Minimum hits", desc: "Scaling." }, 
+            "Elite Eating": { hp: "100", attack: "13", scale: "1.0", speed: "0.275", ability: "Eats for effects", tips: "Damage fast", desc: "Consumer." }, 
+            "Elite Splitting": { hp: "100", attack: "13", scale: "1.0", speed: "0.275", ability: "Splits 5 times", tips: "One by one", desc: "Multiplication." } 
+        } },
+        "Pillager": { variants: { 
+            "Regular": { hp: "24", attack: "Crossbow", scale: "1.0", speed: "0.3", ability: "Offhand special arrows, invisibility below 12 HP", tips: "Kill quickly", desc: "Raider." }, 
+            "Leader": { hp: "32", attack: "Crossbow", scale: "1.15", speed: "0.1", ability: "Bone on head, killer bunny", tips: "Kill first", desc: "Commander." } 
+        } },
+        "Ravager": { variants: { "Regular": { hp: "150", attack: "10", scale: "1.3", speed: "0.4", ability: "Full HP buffs, roar below 100 HP", tips: "Damage once then trap", desc: "Enraged beast." } } },
+        "Shulker": { variants: { "Regular": { hp: "48", attack: "Bullet", scale: "1.0", speed: "0.1", ability: "Bullet shield, random surprise on death", tips: "High CPS", desc: "Lucky box." } } },
+        "Silverfish": { variants: { "Regular": { hp: "16", attack: "2", scale: "1.5", speed: "0.35", ability: "Steals items, makes mobs ride", tips: "Don't build up", desc: "Thief." } } },
+        "Skeleton": { variants: { 
+            "Regular": { hp: "16", attack: "4", scale: "1.0", speed: "0.325", ability: "Immune fall/sun", tips: "Take cover", desc: "Archer." }, 
+            "Zombie Head": { hp: "24", attack: "5", scale: "1.0", speed: "0.2", ability: "6 armor, sun immune", tips: "Fights anytime", desc: "Sun-immune." }, 
+            "Hunter": { hp: "16", attack: "4", scale: "1.0", speed: "0.325", ability: "Switches weapons", tips: "Commit to range", desc: "Adaptive." } 
+        } },
+        "Slime": { variants: { 
+            "Size 3": { hp: "16", attack: "3 AoE", scale: "2.0", speed: "1.05", ability: "AoE damage", tips: "Area damage", desc: "Large." }, 
+            "Size 1": { hp: "4", attack: "5 death", scale: "0.5", speed: "1.05", ability: "Death explosion", tips: "Kill from distance", desc: "Bomber." }, 
+            "Size 0": { hp: "1", attack: "2", scale: "0.25", speed: "1.05", ability: "Stackable", tips: "Swarm clearing", desc: "Tiny." } 
+        } },
+        "Stray": { variants: { 
+            "Regular": { hp: "14", attack: "3", scale: "1.0", speed: "0.35", ability: "Slowness I", tips: "Bring milk", desc: "Icy archer." }, 
+            "Hunter": { hp: "14", attack: "3", scale: "1.0", speed: "0.35", ability: "Switches weapons", tips: "Commit to range", desc: "Adaptive." } 
+        } },
+        "Vex": { variants: { "Regular": { hp: "16", attack: "3", scale: "1.25", speed: "0.1", ability: "25% spawn clone", tips: "Kill clones", desc: "Summoner." } } },
+        "Vindicator": { variants: { 
+            "Regular": { hp: "24", attack: "8", scale: "1.0", speed: "0.275", ability: "Magnify below 12 HP", tips: "Watch magnify", desc: "Berserker." }, 
+            "Leader": { hp: "24", attack: "8", scale: "1.25", speed: "0.275", ability: "Bone, resurrects", tips: "Kill first", desc: "Commander." } 
+        } },
+        "Warden": { variants: { "Regular": { hp: "750", attack: "30", scale: "1.5", speed: "0.1", ability: "Drains XP, spawns babies, music box stuns", tips: "Always carry jukebox", desc: "Deep dark terror." } } },
+        "Witch": { variants: { "Regular": { hp: "30", attack: "Potion", scale: "1.0", speed: "0.1", ability: "Spawns mini skeletons below 10 HP", tips: "Finish quickly", desc: "Potion thrower." } } },
+        "Wither Skeleton": { variants: { "Regular": { hp: "40", attack: "7", scale: "1.0", speed: "0.25", ability: "Soul exits below 12 HP", tips: "Kill the soul", desc: "Soul-releaser." } } },
+        "Zombie": { variants: { 
+            "Regular": { hp: "24", attack: "3", scale: "1.0", speed: "0.225", ability: "Bite debuffs", tips: "Maintain distance", desc: "Standard." }, 
+            "Giant Zombie": { hp: "72", attack: "3", scale: "2.0", speed: "0.225", ability: "Splits into 2", tips: "Safe area", desc: "Massive." }, 
+            "Leader": { hp: "50", attack: "3", scale: "1.0", speed: "0.23", ability: "Crown, summons", tips: "Kill first", desc: "Commander." } 
+        } },
+        "Zombie Villager": { variants: { "Regular": { hp: "20", attack: "3", scale: "1.0", speed: "0.1", ability: "Day resistance, weakness below 10 HP", tips: "Cure quickly", desc: "Curable." } } }
+    },
+    "Boss Mobs": {
+        "Hell Wither": { variants: { "Phase 1-2": { hp: "600", attack: "Variable", scale: "1.5", speed: "0.1", ability: "Phase 1: summons wither skeletons. Phase 2: possesses miniboss", tips: "Destroy miniboss", desc: "Upgraded wither." } } }
+    },
+    "New Mobs": {
+        "Killer Bunny": { variants: { "Regular": { hp: "32", attack: "6", scale: "1.0", speed: "0.35", ability: "Illusions, summons killer bunnys", tips: "Use fire", desc: "Deceptive." } } },
+        "Illusioner": { variants: { "Regular": { hp: "24", attack: "Bow", scale: "1.0", speed: "0.35", ability: "Illusions, summons killer bunnys", tips: "Use fire", desc: "Deceptive." } } },
+        "Observer Unit": { variants: { "Regular": { hp: "50", attack: "0 (6 enraged)", scale: "1.0", speed: "0.35", ability: "Jumpscare above 25 HP, enrages below, explodes on death", tips: "Trap in boat", desc: "Illager machine." } } },
+        "Haunted Armor": { variants: { "Regular": { hp: "15 hits", attack: "10", scale: "1.0", speed: "0.15", ability: "Invulnerable after hit, armor gives stats", tips: "Use fists", desc: "Possessed armor." } } }
+    }
+};
+
+let currentMob = null, currentVariant = null;
+
+function getAllMobs() { let list = []; for (let cat in mobDatabase) for (let mob in mobDatabase[cat]) list.push({name: mob, category: cat}); return list; }
+
+function renderHome(filterText = "") {
+    const container = document.getElementById('mobContainer');
+    container.innerHTML = '';
+    let hasResults = false;
+    const searchLower = filterText.toLowerCase();
+    
+    for (let cat in mobDatabase) {
+        let categoryMobs = [];
+        for (let mob in mobDatabase[cat]) {
+            if (searchLower === "" || mob.toLowerCase().includes(searchLower)) categoryMobs.push(mob);
+        }
+        if (categoryMobs.length) {
+            hasResults = true;
+            container.innerHTML += `<div class="category"><div class="category-title">${cat}</div><div class="mob-grid" id="grid-${cat.replace(/\s/g,'')}"></div></div>`;
+            const grid = document.getElementById(`grid-${cat.replace(/\s/g,'')}`);
+            for (let mob of categoryMobs) {
+                let homeIcon = getHomeIcon(mob);
+                grid.innerHTML += `<div class="mob-card" onclick="showDetail('${mob.replace(/'/g,"\\'")}')"><img src="${homeIcon}" loading="lazy" onerror="this.src='https://minecraft.wiki/images/HerobrineFace.png'"><p>${mob}</p></div>`;
+            }
+        }
+    }
+    if (!hasResults && searchLower !== "") container.innerHTML = `<div class="no-results">❌ No mobs found matching "${filterText}"</div>`;
+}
+
+function showDetail(mobName) {
+    currentMob = mobName;
+    let mobData = null;
+    for (let cat in mobDatabase) if (mobDatabase[cat][mobName]) { mobData = mobDatabase[cat][mobName]; break; }
+    if (!mobData) return;
+    currentVariant = Object.keys(mobData.variants)[0];
+    updateDisplay(mobName, mobData);
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('detailPage').style.display = 'block';
+    window.history.pushState({ mob: mobName }, '', `?mob=${encodeURIComponent(mobName)}`);
+}
+
+function updateDisplay(mobName, mobData) {
+    const variant = mobData.variants[currentVariant];
+    document.getElementById('detail-name').innerHTML = `${mobName} <span class="variant-badge">${currentVariant}</span>`;
+    document.getElementById('article-title').innerHTML = `${mobName} — ${currentVariant}`;
+    let detailIcon = getDetailIcon(mobName, currentVariant);
+    document.getElementById('detail-img').src = detailIcon;
+    document.getElementById('detail-img').onerror = function() { this.src = 'https://minecraft.wiki/images/HerobrineFace.png'; };
+    document.getElementById('detail-hp').innerHTML = variant.hp;
+    
+    let attackRow = document.getElementById('attackRow');
+    if (variant.attack === "N/A" || variant.attack === "None") attackRow.style.display = "none";
+    else { attackRow.style.display = "block"; document.getElementById('detail-dmg').innerHTML = variant.attack; }
+    
+    let scaleRow = document.getElementById('scaleRow');
+    if (variant.scale && Math.abs(parseFloat(variant.scale) - 1.0) > 0.01) { scaleRow.style.display = "block"; document.getElementById('detail-scale').innerHTML = variant.scale; }
+    else scaleRow.style.display = "none";
+    
+    // Tambahkan kode untuk speed
+    let speedRow = document.getElementById('speedRow');
+    if (variant.speed && variant.speed !== "N/A" && variant.speed !== "None" && variant.speed !== "Variable") {
+        speedRow.style.display = "block";
+        document.getElementById('detail-speed').innerHTML = variant.speed;
+    } else {
+        speedRow.style.display = "none";
+    }
+    
+    document.getElementById('detail-ability').innerHTML = variant.ability;
+    document.getElementById('detail-tips').innerHTML = variant.tips;
+    document.getElementById('detail-description').innerHTML = `<p>${variant.desc}</p>`;
+    
+    let btnContainer = document.getElementById('variantButtons');
+    btnContainer.innerHTML = '';
+    for (let vName in mobData.variants) {
+        let btn = document.createElement('button');
+        btn.className = 'variant-btn' + (vName === currentVariant ? ' active' : '');
+        btn.innerText = vName;
+        btn.onclick = (function(v) { return function() { currentVariant = v; updateDisplay(mobName, mobData); }; })(vName);
+        btnContainer.appendChild(btn);
+    }
+}
+
+function filterMobs() { renderHome(document.getElementById('searchInput').value); }
+function goBack() { document.getElementById('detailPage').style.display = 'none'; document.getElementById('homePage').style.display = 'block'; window.history.pushState({}, '', window.location.pathname); renderHome(''); document.getElementById('searchInput').value = ''; }
+function toggleTheme() { document.body.classList.toggle('dark-mode'); let isDark = document.body.classList.contains('dark-mode'); localStorage.setItem('remobTheme', isDark ? 'dark' : 'light'); document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙'; }
+function applyTheme() { let saved = localStorage.getItem('remobTheme'); if (saved === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('themeBtn').innerText = '☀️'; } else { document.body.classList.remove('dark-mode'); document.getElementById('themeBtn').innerText = '🌙'; } }
+
+window.addEventListener('load', () => {
+    applyTheme();
+    let params = new URLSearchParams(window.location.search);
+    let mobParam = params.get('mob');
+    if (mobParam && getAllMobs().some(m => m.name === mobParam)) showDetail(mobParam);
+    else renderHome('');
+    document.getElementById('backButton')?.addEventListener('click', goBack);
+});
+window.onpopstate = () => { let params = new URLSearchParams(window.location.search); let mobParam = params.get('mob'); if (mobParam && getAllMobs().some(m => m.name === mobParam)) showDetail(mobParam); else { document.getElementById('detailPage').style.display = 'none'; document.getElementById('homePage').style.display = 'block'; renderHome(''); document.getElementById('searchInput').value = ''; } };
+window.showDetail = showDetail; window.filterMobs = filterMobs; window.toggleTheme = toggleTheme;
+</script>
+</body>
+</html>
