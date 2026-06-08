@@ -818,10 +818,28 @@ function updateDisplay(mobName, mobData) {
     detailImg.src = detailIcon;
     detailImg.onerror = function() { this.src = 'https://minecraft.wiki/images/HerobrineFace.png'; };
     
-    // Hapus semua class sebelumnya, lalu tambahkan class khusus untuk Strider Nano
     detailImg.className = '';
-    if (mobName === "Strider" && currentVariant === "Nano") {
-        detailImg.classList.add('detail-img-strider-nano');
+    if (mobName === "Strider") {
+        if (currentVariant === "Nano") {
+            detailImg.classList.add('detail-img-strider-nano');
+        } else if (currentVariant === "Micro") {
+            detailImg.classList.add('detail-img-strider-micro');
+        } else if (currentVariant === "Mini") {
+            detailImg.classList.add('detail-img-strider-mini');
+        } else if (currentVariant === "Standard") {
+            detailImg.classList.add('detail-img-strider-standard');
+        } else if (currentVariant === "Large") {
+            detailImg.classList.add('detail-img-strider-large');
+        } else if (currentVariant === "Giant") {
+            detailImg.classList.add('detail-img-strider-giant');
+        } else if (currentVariant === "Terra") {
+            detailImg.classList.add('detail-img-strider-terra');
+        }
+    }
+    if (mobName === "Sniffer") {
+        if (currentVariant === "Regular") {
+            detailImg.classList.add('detail-img-sniffer-regular');
+        }
     }
     
     document.getElementById('detail-hp').innerHTML = variant.hp;
