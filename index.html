@@ -176,12 +176,18 @@
         /* DETAIL PAGE ICON: variant-specific (different from home) */
         .infobox-img { text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); }
         .infobox-img img { image-rendering: pixelated; max-width: 140px; max-height: 140px; object-fit: contain; }
+        
+        /* Khusus Strider Nano - ukuran 50x50px */
+        .detail-img-strider-nano { 
+            max-width: 50px !important; 
+            max-height: 50px !important; 
+            width: 50px !important; 
+            height: 50px !important; 
+        }
+        
         .infobox-stats { padding: 1rem; border-top: 1px solid var(--border); }
         .infobox-stats p { margin: 0.5rem 0; }
         .infobox-stats strong { color: var(--accent); }
-
-        .detail-img-strider_nano { max-height: 50px !important; }
-        .detail-img-zombified_piglin_jockey { max-height: 1400px, max-width:1400px !important; }
 
         .variant-selector {
             margin: 1rem 0;
@@ -771,8 +777,16 @@ function updateDisplay(mobName, mobData) {
     document.getElementById('detail-name').innerHTML = `${mobName} <span class="variant-badge">${currentVariant}</span>`;
     document.getElementById('article-title').innerHTML = `${mobName} — ${currentVariant}`;
     let detailIcon = getDetailIcon(mobName, currentVariant);
-    document.getElementById('detail-img').src = detailIcon;
-    document.getElementById('detail-img').onerror = function() { this.src = 'https://minecraft.wiki/images/HerobrineFace.png'; };
+    let detailImg = document.getElementById('detail-img');
+    detailImg.src = detailIcon;
+    detailImg.onerror = function() { this.src = 'https://minecraft.wiki/images/HerobrineFace.png'; };
+    
+    // Hapus semua class sebelumnya, lalu tambahkan class khusus untuk Strider Nano
+    detailImg.className = '';
+    if (mobName === "Strider" && currentVariant === "Nano") {
+        detailImg.classList.add('detail-img-strider-nano');
+    }
+    
     document.getElementById('detail-hp').innerHTML = variant.hp;
     
     let attackRow = document.getElementById('attackRow');
