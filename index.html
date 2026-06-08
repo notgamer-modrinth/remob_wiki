@@ -499,6 +499,7 @@ function getDetailIcon(mobName, variantName) {
         "warden_regular": "https://minecraft.wiki/images/thumb/Warden.gif/150px-Warden.gif?d0f99",
         "witch_regular": "https://minecraft.wiki/images/thumb/Witch_JE3.png/100px-Witch_JE3.png?aeb30",
         "wither_skeleton_regular": "https://minecraft.wiki/images/thumb/Wither_Skeleton_JE4_BE3.png/150px-Wither_Skeleton_JE4_BE3.png?9c107",
+        "wither_skeleton_elite_ranger": "assets/elite_wither_skeleton_bow.png",
         "zombie_regular": "https://minecraft.wiki/images/thumb/Zombie_JE3_BE2.png/150px-Zombie_JE3_BE2.png?c5423",
         "zombie_giant_zombie": "Zombie.png",
         "zombie_leader": "Zombie.png",
@@ -696,7 +697,10 @@ const mobDatabase = {
         } },
         "Warden": { variants: { "Regular": { hp: "750", attack: "30", scale: "1.5", speed: "0.1", ability: "Drains XP, spawns babies, music box stuns", tips: "Always carry jukebox", desc: "Deep dark terror." } } },
         "Witch": { variants: { "Regular": { hp: "30", attack: "Potion", scale: "1.0", speed: "0.1", ability: "Spawns mini skeletons below 10 HP", tips: "Finish quickly", desc: "Potion thrower." } } },
-        "Wither Skeleton": { variants: { "Regular": { hp: "40", attack: "7", scale: "1.0", speed: "0.25", ability: "Soul exits below 12 HP", tips: "Kill the soul", desc: "Soul-releaser." } } },
+        "Wither Skeleton": { variants: {
+            "Regular": { hp: "40", attack: "7", scale: "1.0", speed: "0.25", ability: "Soul exits below 12 HP", tips: "Kill the soul", desc: "Soul-releaser." } ,
+            "Elite Ranger":{ hp: "56", attack: "bow", scale: "1.0", speed: "0.225", ability: "Every shot it fires summons a wither soul", tips: "Kill the elite ranger as fast as you can", desc: "An elite ranger who lives its life mostly training at the fortress."}
+        } },
         "Zombie": { variants: { 
             "Regular": { hp: "24", attack: "3", scale: "1.0", speed: "0.225", ability: "Bite debuffs", tips: "Maintain distance", desc: "Standard." }, 
             "Giant Zombie": { hp: "72", attack: "3", scale: "2.0", speed: "0.225", ability: "Splits into 2", tips: "Safe area", desc: "Massive." }, 
