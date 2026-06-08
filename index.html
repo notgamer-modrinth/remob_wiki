@@ -222,6 +222,13 @@
             height: 280px !important; 
         }
         
+        .detail-img-zombified_piglin-jockey { 
+            max-width: 258px !important; 
+            max-height: 1474px !important; 
+            width: 258px !important; 
+            height: 1474px !important; 
+        }
+        
         .infobox-stats { padding: 1rem; border-top: 1px solid var(--border); }
         .infobox-stats p { margin: 0.5rem 0; }
         .infobox-stats strong { color: var(--accent); }
@@ -839,6 +846,11 @@ function updateDisplay(mobName, mobData) {
     if (mobName === "Sniffer") {
         if (currentVariant === "Regular") {
             detailImg.classList.add('detail-img-sniffer-regular');
+        }
+    }
+    if (mobName === "Zombified Piglin") {
+        if (currentVariant === "Jockey") {
+            detailImg.classList.add('detail-img-zombified_piglin-jockey');
         }
     }
     
