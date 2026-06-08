@@ -229,6 +229,25 @@
             height: 737px !important; 
         }
         
+        .detail-img-spider-regular { 
+            max-width: 123px !important; 
+            max-height: 123px !important; 
+            width: 123px !important; 
+            height: 123px !important; 
+        }
+        
+        .detail-img-spider-wolf_spider { 
+            max-width: 168px !important; 
+            max-height: 168px !important; 
+            width: 168px !important; 
+            height: 168px !important; 
+        }
+        .detail-img-spider-goliath_spider { 
+            max-width: 224px !important; 
+            max-height: 224px !important; 
+            width: 224px !important; 
+            height: 224px !important; 
+        }
         .infobox-stats { padding: 1rem; border-top: 1px solid var(--border); }
         .infobox-stats p { margin: 0.5rem 0; }
         .infobox-stats strong { color: var(--accent); }
@@ -564,7 +583,7 @@ function getDetailIcon(mobName, variantName) {
         // New Mobs
         "killer_bunny_regular": "https://minecraft.wiki/images/thumb/The_Killer_Bunny_JE6.png/230px-The_Killer_Bunny_JE6.png?0d361",
         "observer_unit_regular": "https://minecraft.wiki/images/thumb/Observer_JE4_BE3.png/150px-Observer_JE4_BE3.png",
-        "haunted_armor_regular": "https://minecraft.wiki/images/thumb/Diamond_Helmet_JE2_BE2.png/160px-Diamond_Helmet_JE2_BE2.png"
+        "haunted_armor_regular": "assets/haunted_armor"
     };
     
     if (variantImageMap[key]) return variantImageMap[key];
@@ -854,6 +873,15 @@ function updateDisplay(mobName, mobData) {
         }
     }
     
+    if (mobName === "Spider") {
+        if (currentVariant === "Regular") {
+            detailImg.classList.add('detail-img-spider-regular');
+        } else if (currentVariant === "Wolf Spider") {
+            detailImg.classList.add('detail-img-spider-wolf_spider');
+        } else if (currentVariant === "Goliath Spider") {
+            detailImg.classList.add('detail-img-spider-goliath_spider');
+        }
+    }
     document.getElementById('detail-hp').innerHTML = variant.hp;
     
     let attackRow = document.getElementById('attackRow');
